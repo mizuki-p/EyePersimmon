@@ -77,12 +77,12 @@ Client的预期使用方式：
 
 ```python 
 # 使用预先定义的示例
-python -m NotBorder.example.omnigibson_example
+python -m EP.example.omnigibson_example
 ```
 
 ```python
 # 使用自定义场景
-from NotBorder import omnigibson_proxy
+from EP import omnigibson_proxy
 
 # init environment
 env = omnigibson.OmniGibsonEnv()
@@ -96,18 +96,19 @@ env, client = omnigibson_proxy.Client(
 while True:
     # action = get_action()
     # obs = env.step(action)
+    obs = env.get_observation()
     action = client.get_action(obs)
-    obs = env.step(action)
+    _ = env.step(action)
 ```
 
 ```python
 # 使用自定义模拟器
-from NotBorder import NBClient
+from EP import EPClient
 
 # init environment
 env = Unreal.Env()
 
-client = NBClient(
+client = EPClient(
     client_id = 'client_1',
     env_id = 'env_1',
     env_name = 'Unreal',
