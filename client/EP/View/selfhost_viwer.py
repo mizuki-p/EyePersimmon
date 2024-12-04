@@ -5,7 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import threading
 import uvicorn
-from fastapi.responses import StreamingResponse
 from ..manager import BaseClient
 from ..configs import Config
 
@@ -42,13 +41,10 @@ class TransferViewer:
         async def register():
             state, msg = await self.invoker.register()
             return {"state": state, "msg": msg}
-
-        @self.app.get("/queryRegistered")
+        
+        @self.app.get('/queryRegistered')
         async def query_registered():
-            return {
-                "state": self.invoker.registered,
-                "msg": "Registered" if self.invoker.registered else "Not registered",
-            }
+            return {"state": self.invoker.registered, "msg": "Registered" if self.invoker.registered else "Not registered"}
 
         @self.app.post("/get_action")
         async def get_action(request: Request):
@@ -111,22 +107,7 @@ class TransferViewer:
             state, url = self.invoker.get_live_url()
             return {"state": state, "msg": url}
         
-        @self.app.post("/startPushVideo")
-        def start_push_video():
-            state, msg = self.invoker.start_push_video()
-            return {"state": state, "msg": msg}
-        
-        @self.app.post("/stopPushVideo")
-        def stop_push_video():
-            state, msg = self.invoker.stop_push_video()
-            return {"state": state, "msg": msg}
-        
-        @self.app.get('/getVideo')
-        def get_video():
-            print('get video')
-            return StreamingResponse(self.invoker.get_video_pushing_source(), media_type="multipart/x-mixed-replace; boundary=frame")
-
-        @self.app.post("/resetScene")
+        @self.app.post('/resetScene')
         async def reset_scene():
             state, msg = await self.invoker.reset_scene()
             return {"state": state, "msg": msg}

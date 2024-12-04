@@ -18,14 +18,14 @@ class wss_io:
         
         try: 
             response = await asyncio.wait_for(asyncio.sleep(randint(1, 11), {
-                'status': True,
+                'state': True,
                 'msg': 'register success'
             }), timeout=10)
         except TimeoutError as e:
             return False, 'timeout'
         
-        status, msg = response['status'], response['msg']
-        if status:
+        state, msg = response['state'], response['msg']
+        if state:
             return True, 'Register success'
         else:
             return False, msg
@@ -36,15 +36,15 @@ class wss_io:
             return False, 'Websocket not connected'
         
         try:
-            response = await asyncio.wait_for(asyncio.sleep(randint(1, 11), {
-                'status': True,
+            response = await asyncio.wait_for(asyncio.sleep(0.5, {
+                'state': True,
                 'action': randint(0, 10)
             }), timeout=30)
         except TimeoutError as e:
             return False, 'timeout'
         
-        status = response['status']
-        if status:
+        state = response['state']
+        if state:
             # return True, response['action']
             return True, 2 * (torch.rand(1, 1, 21) - 0.5)
         else:

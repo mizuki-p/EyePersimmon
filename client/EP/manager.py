@@ -21,6 +21,8 @@ class BaseClient(ClientIDMixin):
 
         self.task_running = False
         self.instruction = ""
+        
+        self.video_pushing = False
 
     async def init(self):
         self.io = wss_io()
@@ -43,19 +45,32 @@ class BaseClient(ClientIDMixin):
         
         return state, msg
 
+    # async def get_action(self, instruction):
+    #     if not self.inited:
+    #         return False, "Client not inited"
+        
+    #     if not self.registered:
+    #         return False, "Client not registered"
+        
+    #     status, msg = await self.io.request_action(
+    #         self.get_client_id(), self.env.get_observation(), instruction
+    #     )
+    #     if status:
+    #         self.env.step(msg)
+    #     return status, msg
+    
     async def get_action(self, instruction):
         if not self.inited:
             return False, "Client not inited"
-        
         if not self.registered:
             return False, "Client not registered"
         
-        status, msg = await self.io.request_action(
+        state, msg = await self.io.request_action(
             self.get_client_id(), self.env.get_observation(), instruction
         )
-        if status:
-            self.env.step(msg)
-        return status, msg
+        if state:
+            self.env.add_action(msg)
+        return state, msg
 
     def start_task(self, instruction):
         if not self.inited:
@@ -71,6 +86,7 @@ class BaseClient(ClientIDMixin):
         self.task_running = True
 
         async def task():
+            print(f'Task started')
             while self.task_running:
                 await self.get_action(self.instruction)
 
@@ -90,6 +106,26 @@ class BaseClient(ClientIDMixin):
         self.task_running = False
         self.instruction = ""
         return True, "Task stopped"
+        
+    def start_push_video(self):
+        if not self.inited:
+            return False, "Client not inited"
+        
+        if self.video_pushing:
+            return False, "Video already pushing"
+        
+        self.video_pushing = True
+        return True, "Video pushing started"
+    
+    def stop_push_video(self):
+        if not self.inited:
+            return False, "Client not inited"
+        
+        if not self.video_pushing:
+            return False, "Video not pushing"
+        
+        self.video_pushing = False
+        return True, "Video pushing stopped"
 
     def get_live_url(self):
         if not self.inited:
@@ -109,9 +145,14 @@ class BaseClient(ClientIDMixin):
         }
         
     async def reset_scene(self):
-        await asyncio.get_event_loop().run_in_executor(None, self.env.reset)
+        self.env.put_event(self.env.reset_env)
         return True, "Scene reset"
+    
+    def get_video_pushing_source(self):
+        return self.env.video_pusher(lambda : self.video_pushing)
+    
         
     async def close(self):
         await self.io.close()
         self.inited = False
+        self.task_running = False

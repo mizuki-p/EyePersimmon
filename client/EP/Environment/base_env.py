@@ -25,6 +25,10 @@ class BaseEnv:
         
         # if view_mode == ViewMode.Transfer
         view_data_flow: ViewDataFlow = None,
+        
+        # if view_data_flow == ViewDataFlow.Active
+        video_pusher: Callable[[Callable[[], bool]], Image] = None, 
+        
         # if view_data_flow == ViewDataFlow.Passive
         frame_rate: int = None,
         frame_captor: Callable[[], Image] = None,
@@ -46,6 +50,7 @@ class BaseEnv:
         elif view_mode == ViewMode.Transfer:
             assert view_data_flow is not None, 'view_data_flow must be provided if view_mode is Transfer'
             self.view_data_flow = view_data_flow
+            self.video_pusher = video_pusher
             if view_data_flow == ViewDataFlow.Passive:
                 assert frame_rate is not None, 'frame_rate must be provided if view_data_flow is Passive'
                 assert frame_captor is not None, 'frame_captor must be provided if view_data_flow is Passive'
@@ -53,6 +58,7 @@ class BaseEnv:
                 self.frame_captor = frame_captor
         
         self.action_queue = Queue()
+        self.event_queue = Queue()
 
         
     def get_view_url(self) -> str:
@@ -67,3 +73,13 @@ class BaseEnv:
         else:
             return self.action_queue.get()
         
+    def add_action(self, action: Action):
+        self.action_queue.put(action)
+    
+    def do_sth(self):
+        if not self.event_queue.empty():
+            event = self.event_queue.get()
+            event()
+    
+    def put_event(self, event: Callable[[], None]):
+        self.event_queue.put(event)

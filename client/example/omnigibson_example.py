@@ -1,8 +1,10 @@
 import os
+import sys
 os.environ['OMNIGIBSON_REMOTE_STREAMING'] = 'webrtc'
 os.environ['OMNIGIBSON_GPU_ID'] = '9'
 os.environ['CUDA_VISIBLE_DEVICES'] = '9'
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
+sys.path[0] = os.getcwd()
 
 import torch
 from omnigibson.macros import gm
@@ -15,9 +17,9 @@ from EP.View.transfer_viewer import TransferViewer
 from EP.Environment.omnigibson_env import get_env
 from EP.manager import BaseClient
 
-gm.ASSET_PATH = "/home/wanghan/data/agent/behavior_datasets/data/assets"
-gm.DATASET_PATH = "/home/wanghan/data/agent/behavior_datasets/data/og_dataset"
-gm.KEY_PATH = "/home/wanghan/data/agent/behavior_datasets/data/omnigibson.key"
+# gm.ASSET_PATH = "/home/wanghan/data/agent/behavior_datasets/data/assets"
+# gm.DATASET_PATH = "/home/wanghan/data/agent/behavior_datasets/data/og_dataset"
+# gm.KEY_PATH = "/home/wanghan/data/agent/behavior_datasets/data/omnigibson.key"
 
 
 scene_options = {
@@ -97,18 +99,19 @@ for sensor in robot.sensors.values():
         sensor.image_width = 256
 
 
-# env, proxy_env = get_env(env)
-# invoker = BaseClient(proxy_env)
-# viewer = TransferViewer(invoker)
+env, proxy_env = get_env(env)
+invoker = BaseClient(proxy_env)
+viewer = TransferViewer(invoker)
 
-# viewer.run()
+viewer.run()
 
 try:
     while True:
-        # action = proxy_env.get_action()
-        # env.step(action)
-        env.step(torch.zeros(1, 1, 21))
+        action = proxy_env.get_action()
+        env.step(action)
+        proxy_env.do_sth()
 except KeyboardInterrupt:
     pass
 
-# viewer.close()
+viewer.close()
+env.close()

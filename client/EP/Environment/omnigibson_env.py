@@ -15,6 +15,6 @@ def get_env(env):
         reset_env=lambda : env.reset(),
         
         view_mode=ViewMode.SelfHost,
-        get_view_url=lambda : 'http://localhost:8080',
+        get_view_url=lambda : 'http://121.48.161.147:8211/streaming/webrtc-client?server=121.48.161.147',
     )
     return env, env_proxy
