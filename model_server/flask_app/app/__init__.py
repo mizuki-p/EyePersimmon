@@ -1,21 +1,21 @@
-from flask import Flask
-from app.route import register_routes  # 导入 route.py 中的路由注册函数
+from fastapi import FastAPI
+from app.route import register_routes
 
 
-
-
-def create_app():
-    """创建 Flask 应用实例"""
-    # 初始化并配置 Flask 应用（从 config.py 导入配置）
-    app = Flask(__name__)
-    app.config.from_object('app.config.Config')
+def create_app() -> FastAPI:
+    """
+    工厂方法，用于创建 FastAPI 应用实例。
+    :return: 配置完成的 FastAPI 应用实例。
+    """
+    app = FastAPI(title="WebSocket Application", version="1.0.0")
 
     # 注册路由
     register_routes(app)
-    
+
     return app
 
-'''
+
+"""
 
 /app
     __init__.py
@@ -23,4 +23,4 @@ def create_app():
     route.py
 config.py
 run.py
-'''
+"""
