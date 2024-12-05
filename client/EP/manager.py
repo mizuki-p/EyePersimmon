@@ -1,6 +1,8 @@
 import asyncio
 from uuid import uuid4
 
+from client.EP.types import ViewMode
+
 # from .Controller.wss_io import wss_io
 from .Controller.fake_io import wss_io
 from .Environment.base_env import BaseEnv
@@ -142,6 +144,7 @@ class BaseClient(ClientIDMixin):
             "client_id": self.get_client_id(),
             "env_name": self.env.env_name,
             "scene_name": self.env.scene_name,
+            "live_type": 'selfhost' if self.env.view_mode == ViewMode.SelfHost else 'transfer',
         }
         
     async def reset_scene(self):
