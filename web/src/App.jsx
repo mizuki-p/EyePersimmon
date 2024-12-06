@@ -10,9 +10,8 @@ import {
   register as ioRegister, 
   startTask as ioStartTask, 
   stopTask as ioStopTask, 
-  queryTaskState as ioQueryTaskState,
   resetEnv as ioResetEnv,
-} from './io/fake_utils'
+} from './io/selfhost_utils'
 
 const RegisterState = {
   NotRegistered: "Not Registered",
@@ -44,6 +43,7 @@ function App() {
   const [serverAvailable, setServerAvailable] = useState(false);
   const [taskState, setTaskState] = useState(TaskState.Stopped);
   const [videoState, setVideoState] = useState(VideoState.Paused);
+  const [instruction, setInstruction] = useState('')
 
 
   useEffect(() => {
@@ -53,11 +53,11 @@ function App() {
       setHistoryMsg(h => [...h, server_msg])
 
       if (server_state) {
-        ioQueryEnvironment().then(({state, client_id: clientId, platform, scene: scene, live_type}) => {
-          setHistoryMsg(h => [...h, `Query Environment: ${state ? 'Success' : 'Failed'}`, `Client ID: ${clientId}`, `Platform: ${platform}`, `Scene: ${scene}`])
+        ioQueryEnvironment().then(({state, client_id: clientId, env_name, scene_name, live_type}) => {
+          setHistoryMsg(h => [...h, `Query Environment: ${state ? 'Success' : 'Failed'}`, `Client ID: ${clientId}`, `Platform: ${env_name}`, `Scene: ${scene_name}`])
           if (state) {
-            console.log('setEnvInfo', {client_id: clientId, env_name: platform, scene_name: scene, live_type})
-            setEnvInfo({client_id: clientId, env_name: platform, scene_name: scene,})
+            console.log('setEnvInfo', {client_id: clientId, env_name: env_name, scene_name: scene_name, live_type})
+            setEnvInfo({client_id: clientId, env_name: env_name, scene_name: scene_name,})
             setVideoType(live_type)
           }
         })
@@ -98,7 +98,7 @@ function App() {
 
   function startTask() {
     setTaskState(TaskState.Waiting)
-    ioStartTask().then(({state, msg}) => {
+    ioStartTask(instruction).then(({state, msg}) => {
       setHistoryMsg(h => [...h, msg])
       if (state) {
         setTaskState(TaskState.Running)
@@ -142,13 +142,18 @@ function App() {
       {/* Viewer Part */}
       <section className="flex-1 bg-gray-100 flex flex-col">
         {/* Video Display */}
-        <div className="flex-1 bg-black flex items-center justify-center text-white">
+        <div className="flex-1 bg-black text-white flex items-center justify-center overflow-hidden">
           {video}
         </div>
         
         {/* Input and Button */}
         <div className="flex items-center justify-center p-4">
-          <input className="flex-1 border border-gray-400 rounded p-2 mr-2" placeholder="Enter text here..." />
+          <input 
+            value={instruction} 
+            className="flex-1 border border-gray-400 rounded p-2 mr-2" 
+            placeholder="Enter text here..." 
+            onChange={e => setInstruction(e.target.value)}
+          />
           {task_btn}
         </div>
       </section>
