@@ -11,7 +11,9 @@ async function queryEnvironment() {
     const resp = await fetch(`${Config.BaseURL}/queryEnvironment`, {
         method: 'GET'
     })
-    return await resp.json()
+    const data = await resp.json()
+    console.log(`queryEnvironment: ${JSON.stringify(data)}`)
+    return data
 }
 
 async function queryRegistered() {

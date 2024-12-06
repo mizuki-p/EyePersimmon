@@ -17,33 +17,31 @@ import {
 export default function SelfHost({ setHistoryMsg }) {
     const [videoUrl, setVideoUrl] = useState('')
 
-    useEffect(
-        () => {
-            startVideo()
-            return stopVideo
+    useEffect(() => {
+        function startVideo() {
+            ioStartVideo().then(({state, msg}) => {
+                if (state) {
+                    setHistoryMsg(h => [...h, msg])
+                    setVideoUrl(`http://121.48.161.147:33601/getVideo?${new Date().getTime()}`)
+                } else {
+                    setHistoryMsg(h => [...h, msg])
+                }
+            })
         }
-    )
 
-    function startVideo() {
-        ioStartVideo().then(({state, msg}) => {
-            if (state) {
+        function stopVideo() {
+            ioStopVideo().then(({state, msg}) => {
                 setHistoryMsg(h => [...h, msg])
-                setVideoUrl(`http://121.48.161.147:33601/getVideo?${new Date().getTime()}`)
-            } else {
-                setHistoryMsg(h => [...h, msg])
-            }
-        })
-    }
+            })
+        }
 
-    function stopVideo() {
-        ioStopVideo().then(({state, msg}) => {
-            setHistoryMsg(h => [...h, msg])
-        })
-    }
+        startVideo()
+        return stopVideo
+    }, [setHistoryMsg])
 
     return (
-        <div className="flex justify-center items-center">
-            <img src={videoUrl} width="640" height="480"></img>
+        <div className="w-full h-full flex items-center justify-center">
+          <img className="w-full h-auto object-cover" src={videoUrl}></img>
         </div>
     )
 }
