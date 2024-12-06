@@ -1,7 +1,7 @@
 import asyncio
 from uuid import uuid4
 
-from client.EP.types import ViewMode
+from EP.types import ViewMode
 
 # from .Controller.wss_io import wss_io
 from .Controller.fake_io import wss_io
@@ -88,7 +88,6 @@ class BaseClient(ClientIDMixin):
         self.task_running = True
 
         async def task():
-            print(f'Task started')
             while self.task_running:
                 await self.get_action(self.instruction)
 

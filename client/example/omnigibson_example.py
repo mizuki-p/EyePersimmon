@@ -1,8 +1,8 @@
 import os
 import sys
 os.environ['OMNIGIBSON_REMOTE_STREAMING'] = 'webrtc'
-os.environ['OMNIGIBSON_GPU_ID'] = '9'
-os.environ['CUDA_VISIBLE_DEVICES'] = '9'
+os.environ['OMNIGIBSON_GPU_ID'] = '8'
+os.environ['CUDA_VISIBLE_DEVICES'] = '8'
 os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 sys.path[0] = os.getcwd()
 

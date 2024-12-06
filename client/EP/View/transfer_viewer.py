@@ -123,7 +123,6 @@ class TransferViewer:
         
         @self.app.get('/getVideo')
         def get_video():
-            print('get video')
             return StreamingResponse(self.invoker.get_video_pushing_source(), media_type="multipart/x-mixed-replace; boundary=frame")
 
         @self.app.post("/resetScene")
