@@ -12,8 +12,8 @@ def on_open(ws):
     register_payload = {
         "action": "register_client",
         "data": {
-            "client_id": "test_client",
-            "env_id": "env_002",
+            "client_id": "test_client1",
+            "env_id": "env_003",
             "env_name": "Test Environment",
         },
     }
@@ -24,9 +24,9 @@ def on_open(ws):
     action_payload = {
         "action": "get_action",
         "data": {
-            "client_id": "test_client",
-            "instruction": "a man is talking to someone",
-            "observation": "/data/nvme2/dky/lc/image_1.png",
+            "client_id": "test_client1",
+            "instruction": "describe the image",
+            "observation": "/home/zhangshuai/data/boundless/demo.jpeg",
         },
     }
     print("Sending get_action payload...")
@@ -38,7 +38,7 @@ def on_close(ws, close_status_code, close_msg):
 
 
 ws = websocket.WebSocketApp(
-    "ws://127.0.0.1:5000/ws", on_message=on_message, on_open=on_open, on_close=on_close
+    "ws://127.0.0.1:5001/ws", on_message=on_message, on_open=on_open, on_close=on_close
 )
 
 ws.run_forever()
